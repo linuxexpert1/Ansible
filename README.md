@@ -1,4 +1,4 @@
-Ansible Role: Decommissioning MMZ's
+Ansible Role: Decommissioning AWS EC2 Instances
 ====================================
 
 [![Version](https://img.shields.io/static/v1.svg?style=flat&logo=github&label=tag&message=1.0.1&color=blue)](https://github.com/linuxexpert1/mmz-decomm/releases/tag/v1.0.1)

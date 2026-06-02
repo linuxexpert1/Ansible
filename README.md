@@ -33,7 +33,7 @@ zonedns: "foo.com"
 ttlvalue: 86400
  
 recordns:
-  - mmr.foo.com
+  - ec2.foo.com
 
 values:
   - 3.x.x.x

@@ -1,7 +1,7 @@
 Ansible Role: Decommissioning AWS EC2 Instances
 ====================================
 
-[![Version](https://img.shields.io/static/v1.svg?style=flat&logo=github&label=tag&message=1.0.1&color=blue)](https://github.com/linuxexpert1/mmz-decomm/releases/tag/v1.0.1)
+[![Version](https://img.shields.io/static/v1.svg?style=flat&logo=github&label=tag&message=1.0.1&color=blue)](https://github.com/linuxexpert1/Ansible.git/releases/tag/v1.0.1)
 
 This is a generic Ansible role intended to be used for retiring EC2 's or any instances that reside in AWS Cloud infrastructure
 
@@ -118,8 +118,8 @@ Using Galaxy
 
 Install the required roles using Ansible Galaxy.
 ```bash
-    $  ansible-galaxy install -r requirements.yml  --roles-path=mmz-repo 
-    - extracting decomm-roles to /home/ahersi/github/zoom-aws/final/tmp/mmz-repo/decomm-roles
+    $  ansible-galaxy install -r requirements.yml  --roles-path=Ansible-repo 
+    - extracting decomm-roles to /home/ahersi/github/zoom-aws/final/tmp/Ansible-repo/decomm-roles
     - decomm-roles (v1.0.0) was installed successfully
     $ 
 ```

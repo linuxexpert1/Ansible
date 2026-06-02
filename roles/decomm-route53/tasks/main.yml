@@ -1,0 +1,77 @@
+---
+# Main file for Decommissioning AWS MMZ DNS records
+
+- name: "Load Route53 variables for {{ zonedns }} "
+  include_vars: "{{ item }}"
+  with_first_found:
+    - mmz-dns-records-file.yml
+
+- block:
+    - name: "Grab zone id from {{ zonedns }} Domain"
+      route53_zone:
+        zone: "{{ zonedns }}"
+      register: awsinfo
+
+    - debug:
+        msg: "{{ awsinfo }}"
+
+    - set_fact:
+        zoneid: "{{ awsinfo.zone_id }}"
+
+    - name: "Adding list records Route53 DNS zone  {{ zonedns }}"
+      shell: |
+       aws route53 change-resource-record-sets --hosted-zone-id "{{ zoneid }}"  --change-batch '{ "Comment": "Testing creating a record set", "Changes": [ { "Action": "{{ dnsaction }}",  "ResourceRecordSet": { "Name": "{{ item.0 }}", "Type": "A", "TTL": 86400,  "ResourceRecords": [ {"Value": "'"{{ item.1 }}"'" } ] } } ] }'
+      register: dns_add_results
+      with_together:
+        - "{{ recordns }}"
+        - "{{ values }}"
+      ignore_errors: true
+  when: dnsaction | default('false') == "CREATE"
+
+- block:
+    - name: "Grab zone id"
+      route53_zone:
+        zone: "{{ zonedns }}"
+      register: awsinfo
+ 
+    - debug:
+        msg: "{{ awsinfo }}"
+ 
+    - set_fact:
+        zoneid: "{{ awsinfo.zone_id }}"
+ 
+    - name: "Deleting list records Route53 DNS zone  {{ zonedns }}"
+      shell: |
+       aws route53 change-resource-record-sets --hosted-zone-id "{{ zoneid }}"  --change-batch '{ "Comment": "Testing creating a record set", "Changes": [ { "Action": "{{ dnsaction }}",  "ResourceRecordSet": { "Name": "{{ item.0 }}", "Type": "A", "TTL": 86400,  "ResourceRecords": [ {"Value": "'"{{ item.1 }}"'" } ] } } ] }'
+      register: dns_add_results
+      with_together:
+        - "{{ recordns }}"
+        - "{{ values }}"
+      ignore_errors: true
+  when: dnsaction | default('false') == "DELETE"
+
+- block:
+    - name: "Gather allocationid before releasing Elastic IP addresses"
+      shell: |
+       aws ec2 describe-addresses  --public-ips   "{{ item }}" | grep -i allocationid | awk '{print $2}' | tr -d ',' | tr -d '"' >> eipids.txt
+      with_items:
+        - "{{ values }}"
+
+    - name: "Releasing Elastic IP addresses"
+      shell: |
+       for i in $( cat eipids.txt) 
+       do 
+         aws ec2 release-address --allocation-id ${i}
+       done
+      register: eipid_results
+
+    - debug: 
+        msg: "{{ eipid_results.stderr_lines }}"
+ 
+    - name: "Cleanup the  Elastic IP addresses ID file"
+      shell: |
+       rm eipids.txt
+      args:
+        warn: no
+
+  when: eip_release == "true"

@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+
+  tasks:
+    - name: "Load DNS zone and IPs variables file"
+      include_vars: dns_list_vars.yml
+
+    - name: "Grab zone id"
+      route53_zone:
+        zone: "{{ zonedns }}"
+      register: awsinfo
+
+    - debug:
+        msg: "{{ awsinfo }}"
+
+    - set_fact:
+        zoneid: "{{ awsinfo.zone_id }}"
+
+    - name: "Fetch A records from Route53 DNS zone of {{ zonedns }}"
+      shell: |
+       aws route53 list-resource-record-sets --hosted-zone-id "{{ zoneid }}" --query "ResourceRecordSets[?ResourceRecords[?Value == '{{ item }}'] && Type == 'A']"  --output json | grep -Ei 'Name|TTL' | awk '{print $2}' | sort -rn
+      register: dns_records
+      with_items:
+        - "{{ values }}"
+
+    - set_fact:
+       dns_list: "{{ dns_records | json_query('results[].stdout') }}"
+   
+    - set_fact:
+        dns_list_filter: "{{ dns_list |  regex_replace('n', '')  }}"
+    
+    - debug:
+        msg: "{{ dns_list_filter }}"
+
+    - name: "Save the List of A records in list_route53.txt file for {{ zonedns }}"
+      copy:
+        content: '{{ dns_list_filter }}'
+        dest: list_route53.txt

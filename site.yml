@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    operation: 
+
+  environment:
+    AWS_DEFAULT_REGION: "{{ region }}"
+
+  tasks:
+
+    - name: "====Processing AWS Compute Decomm roles===="
+      include_role:
+        name: "{{ role_item }}"
+      loop:
+        - decomm
+        - decomm-route53
+      loop_control:
+        loop_var: role_item

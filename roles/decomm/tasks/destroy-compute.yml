@@ -1,0 +1,52 @@
+---
+- debug:
+    msg: "====Processing Ec2 Terminate Playbook===="
+
+- name: "Gathering facts for instances in {{ region }}"
+  ec2_instance_info:
+    instance_ids: "{{ item }}"
+    region: "{{ region }}"
+  register: aws_ec2_debug
+  with_items: 
+    - "{{ instance_ids }}"
+
+- debug:
+    msg: "{{ aws_ec2_debug  | json_query('results[].instances[].public_ip_address') }}"
+
+- debug:
+    msg: "{{ aws_ec2_debug  | json_query('results[].instances[].state.name') }}"
+
+- set_fact:
+    inst_id: "{{ item }}"
+  with_items: "{{ instance_ids }}"
+
+- set_fact:
+    ec2_status: "{{ item }}"
+  with_items: "{{ aws_ec2_debug  | json_query('results[].instances[].state.name') }}"
+
+- set_fact:
+    instance_pub_eip: "{{ item }}"
+  with_items: "{{ aws_ec2_debug  | json_query('results[].instances[].public_ip_address') }}"
+
+
+- block:
+    - name: "Run Disassociate an elastic IP from an instance(s) when instance(s) Stopped"
+      ec2_eip:
+        device_id: "{{ item.devid }}"
+        ip: "{{ item.eip }}"
+        region: "{{ region }}"
+        release_on_disassociation: yes
+        state: absent
+      with_items:
+        - { devid: '{{ inst_id }}', eip: '{{ instance_pub_eip }}'  }
+
+    - name: "Run Terminate EC2 instance(s) only when instance(s) Stopped"
+      ec2:
+        instance_ids: "{{ item }}"
+        region: "{{ region }}"
+        state: absent
+      with_items:
+        - "{{ instance_ids }}" 
+
+  when: 
+    - ec2_status == "stopped"

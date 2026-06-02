@@ -1,0 +1,10 @@
+---
+# Main file for Decommissioning AWS Computes
+
+- name: "Load variables for {{ region }} instance IDs"
+  include_vars: "{{ item }}"
+  with_first_found:
+    - mmz-id-file.yml
+
+- name: "{{ operation }} compute "
+  include: "{{ operation  }}-compute.yml"

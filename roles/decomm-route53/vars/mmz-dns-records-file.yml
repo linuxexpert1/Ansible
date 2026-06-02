@@ -1,0 +1,19 @@
+---
+#vars file for role/deccom
+zonedns: "foo.com"
+  
+ttlvalue: 86400
+  
+recordns:
+  - test01.foo.com
+  - test02.foo.com
+  - test03.foo.com
+  - test04.foo.com
+  - test05.foo.com
+
+values:
+  - 34.x.x.x
+  - 35.x.x.x
+  - 54.x.x.x
+  - 54.x.x.x
+  - 54.x.x.x

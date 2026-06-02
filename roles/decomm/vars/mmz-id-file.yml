@@ -1,0 +1,12 @@
+---
+#vars file for role/deccom
+instance_ids:
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx
+  - i-xxxxxxxxxxxxxxxxx

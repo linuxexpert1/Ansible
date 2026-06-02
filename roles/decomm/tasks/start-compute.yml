@@ -1,0 +1,47 @@
+---
+- debug:
+    msg: "====Processing Ec2 Start Instance(s) Playbook===="
+
+- name: "Gathering facts for instance(s) in {{ region }}"
+  ec2_instance_info:
+    instance_ids: "{{ item }}"
+    region: "{{ region }}"
+  register: aws_ec2_debug
+  with_items:
+    - "{{ instance_ids }}"
+ 
+- set_fact:
+    inst_id: "{{ item }}"
+  with_items: "{{ instance_ids }}"
+ 
+- set_fact:
+    ec2_status: "{{ item }}"
+  with_items: "{{ aws_ec2_debug  | json_query('results[].instances[].state.name') }}"
+ 
+- block:
+    - name: "Starting instance(s) in {{ region }}"
+      ec2:  
+        instance_ids: '{{ instance_ids }}'
+        region: '{{ region }}'
+        state: running
+        wait: no
+      register: compute_debug
+      with_items:
+        - "{{ instance_ids }}"
+   
+    - name: "Check the Status of instance(s) in {{ region }}"
+      ec2_instance_info:
+        instance_ids: "{{ item }}"
+        region: "{{ region }}"
+      register: aws_ec2_status
+      with_items:
+        - "{{ instance_ids }}"
+
+    - set_fact:
+        status: "{{ item }}"
+      with_items:
+        - "{{ instance_ids }}"
+        - "{{ aws_ec2_status  | json_query('results[].instances[].state.name') }}"
+ 
+  when:
+    - ec2_status == "stopped"

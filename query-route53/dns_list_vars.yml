@@ -1,0 +1,16 @@
+zonedns: "foo.com"
+
+values:
+  - 75.x.x.x
+  - 54.x.x.x
+  - 3.x.x.x
+  - 54.x.x.x
+  - 3.x.x.x
+  - 3.x.x.x
+  - 54.x.x.x
+  - 54.x.x.x
+  - 3.x.x.x
+  - 75.x.x.x
+  - 3.x.x.x
+  - 10.x.x.x
+

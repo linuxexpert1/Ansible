@@ -110,7 +110,7 @@ Using Galaxy
  - Example: Include the decomm'ed roles in your requirements.yml file.
 
 ```yaml
-    - src: git@github.com:linuxexpert1/mmz-decomm.git
+    - src: git@github.com:linuxexpert1/Ansible.git.git
       scm: git
       version: "v1.0.0"
       name: decomm-roles
